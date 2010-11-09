@@ -1,0 +1,9 @@
+BLAKE.bs
+BLAKE.c
+BLAKE.o
+Digest-BLAKE-*
+MANIFEST.bak
+Makefile
+Makefile.old
+blib/
+pm_to_blib
