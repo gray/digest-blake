@@ -14,6 +14,35 @@ MODULE = Digest::BLAKE    PACKAGE = Digest::BLAKE
 
 PROTOTYPES: ENABLE
 
+SV *
+blake_224 (...)
+ALIAS:
+    blake_224 = 224
+    blake_256 = 256
+    blake_384 = 384
+    blake_512 = 512
+PREINIT:
+    hashState ctx;
+    int i;
+    unsigned char *data;
+    unsigned char *result;
+    STRLEN len;
+CODE:
+    if (Init(&ctx, ix) != SUCCESS)
+        XSRETURN_UNDEF;
+    for (i = 0; i < items; i++) {
+        data = (unsigned char *)(SvPV(ST(i), len));
+        if (Update(&ctx, data, len << 3) != SUCCESS)
+            XSRETURN_UNDEF;
+    }
+    Newx(result, ix >> 3, unsigned char);
+    if (Final(&ctx, result) != SUCCESS)
+        XSRETURN_UNDEF;
+    RETVAL = newSVpv(result, ix >> 3);
+    Safefree(result);
+OUTPUT:
+    RETVAL
+
 Digest::BLAKE
 new (class, hashsize)
     SV *class
@@ -59,6 +88,25 @@ PPCODE:
     }
     XSRETURN(1);
 
+void
+_add_bits (self, msg, bitlen)
+    Digest::BLAKE self
+    SV *msg
+    int bitlen
+PREINIT:
+    int i;
+    unsigned char *data;
+    STRLEN len;
+PPCODE:
+    if (! bitlen)
+        XSRETURN(1);
+    data = (unsigned char *)(SvPV(msg, len));
+    if (bitlen > len << 3)
+        bitlen = len << 3;
+    if (Update(self, data, bitlen) != SUCCESS)
+        XSRETURN_UNDEF;
+    XSRETURN(1);
+
 SV *
 digest (self)
     Digest::BLAKE self
@@ -78,32 +126,3 @@ DESTROY (self)
     Digest::BLAKE self
 CODE:
     Safefree(self);
-
-SV *
-blake_224 (...)
-ALIAS:
-    blake_224 = 224
-    blake_256 = 256
-    blake_384 = 384
-    blake_512 = 512
-PREINIT:
-    hashState ctx;
-    int i;
-    unsigned char *data;
-    unsigned char *result;
-    STRLEN len;
-CODE:
-    if (Init(&ctx, ix) != SUCCESS)
-        XSRETURN_UNDEF;
-    for (i = 0; i < items; i++) {
-        data = (unsigned char *)(SvPV(ST(i), len));
-        if (Update(&ctx, data, len << 3) != SUCCESS)
-            XSRETURN_UNDEF;
-    }
-    Newx(result, ix >> 3, unsigned char);
-    if (Final(&ctx, result) != SUCCESS)
-        XSRETURN_UNDEF;
-    RETVAL = newSVpv(result, ix >> 3);
-    Safefree(result);
-OUTPUT:
-    RETVAL

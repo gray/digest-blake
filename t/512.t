@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 19;
+use Test::More tests => 68;
 use Digest::BLAKE qw(blake_512 blake_512_hex);
 
 my $len = 0;
@@ -23,15 +23,9 @@ while (my $line = <DATA>) {
             "blake_512: $len bits of $msg"
         );
     }
-    else {
-        TODO:
-        eval {
-            local $TODO = 'add_bits is not yet implemented';
-            my $md = Digest::BLAKE->new(512)->add_bits($data, $len)
-                ->hexdigest;
-            is($md, $digest, "new/add_bits/hexdigest: $msg");
-        };
-    }
+
+    my $md = Digest::BLAKE->new(512)->add_bits($data, $len)->hexdigest;
+    is($md, $digest, "new/add_bits/hexdigest: $msg");
 }
 continue { $len++ }
 
