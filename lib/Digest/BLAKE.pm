@@ -75,8 +75,8 @@ Digest::BLAKE - Perl interface to the BLAKE digest algorithm
     use Digest::BLAKE qw(blake_256 blake_256_hex blake_256_base64);
 
     $digest = blake_256($data);
-    $digest = blake_hex_256($data);
-    $digest = blake_base64_256($data);
+    $digest = blake_256_hex($data);
+    $digest = blake_256_base64($data);
 
     # Object-oriented interface
     use Digest::BLAKE;
