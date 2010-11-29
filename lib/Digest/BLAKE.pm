@@ -25,33 +25,6 @@ our @EXPORT_OK = qw(
     blake_512 blake_512_hex blake_512_base64
 );
 
-# TODO: convert to C.
-sub blake_224_hex  { unpack 'H*', blake_224(@_) }
-sub blake_256_hex  { unpack 'H*', blake_256(@_) }
-sub blake_384_hex  { unpack 'H*', blake_384(@_) }
-sub blake_512_hex  { unpack 'H*', blake_512(@_) }
-
-sub blake_224_base64 {
-    my $b64 = MIME::Base64::encode(blake_224(@_), '');
-    $b64 =~ s/=+$//g;
-    return $b64;
-}
-sub blake_256_base64 {
-    my $b64 = MIME::Base64::encode(blake_256(@_), '');
-    $b64 =~ s/=+$//g;
-    return $b64;
-}
-sub blake_384_base64 {
-    my $b64 = MIME::Base64::encode(blake_384(@_), '');
-    $b64 =~ s/=+$//g;
-    return $b64;
-}
-sub blake_512_base64 {
-    my $b64 = MIME::Base64::encode(blake_512(@_), '');
-    $b64 =~ s/=+$//g;
-    return $b64;
-}
-
 sub add_bits {
     my ($self, $data, $bits) = @_;
     if (2 == @_) {
